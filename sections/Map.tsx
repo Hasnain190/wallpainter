@@ -1,17 +1,36 @@
 "use client";
 import { useFlipAnimation } from "@/customHooks/flipAnimation";
 import { useRef } from "react";
+import { useParallax } from "@/customHooks/useParallax";
+import mapSVG from "@/public/location.svg";
+import FloatingSVG from "@/components/FloatingSVG";
 
 export default function Map() {
   const mainHeadingRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+
   useFlipAnimation(mainHeadingRef);
+  useParallax(sectionRef, { speed: 70, opacity: false });
 
   return (
-    <section className="bg-gray-200 py-16">
+    <section
+      ref={sectionRef}
+      className="bg-gradient-to-br from-emerald-900 via-green-800 to-teal-900 py-16 relative"
+    >
+      <FloatingSVG
+        src={mapSVG}
+        alt="location"
+        width={200}
+        height={200}
+        className="absolute top-0 left-10 hidden sm:block"
+        floatSpeed={3.5}
+        floatDistance={18}
+        rotationAmount={7}
+      />
       <div className="max-w-7xl mx-auto px-6">
         <h1
           ref={mainHeadingRef}
-          className="font-bold text-center my-8 p-7 text-5xl sm:text-7xl"
+          className="font-bold text-center my-8 p-7 text-5xl sm:text-7xl text-white"
         >
           We are from Fateh Jhang Islamabad
         </h1>

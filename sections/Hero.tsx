@@ -4,7 +4,7 @@ import Image from "next/image";
 import pakistaniFlag from "@/public/images/pakistaniflag.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import Lever from "@/components/Lever";
 import WaterRain from "@/components/WaterRain";
 
@@ -16,13 +16,14 @@ export default function Hero() {
   const heroSectionRef = useRef<HTMLElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
   const [isRaining, setIsRaining] = useState(false);
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const isTouchDevice = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  }, []);
   const isPaintingRef = useRef(false);
 
   useEffect(() => {
-    // Detect touch device
-    const touchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    setIsTouchDevice(touchDevice);
+    const touchDevice = isTouchDevice;
 
     // Initialize canvas with white background
     if (touchDevice && canvasRef.current) {
@@ -56,7 +57,7 @@ export default function Hero() {
         return () => window.removeEventListener('resize', resizeCanvas);
       }
     }
-  }, []);
+  }, [isTouchDevice]);
 
   const handleLeverPull = () => {
     // Start water rain animation

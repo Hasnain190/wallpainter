@@ -5,13 +5,17 @@ import Link from "next/link";
 import { useRef } from "react";
 import Image from "next/image";
 import Avatar from "@/public/avatar_n5q8.svg";
+import { useParallax } from "@/customHooks/useParallax";
 
 export default function CTA() {
   const mainHeadingRef = useRef<HTMLHeadingElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+
   useFlipAnimation(mainHeadingRef);
+  useParallax(sectionRef, { speed: 40, opacity: false });
 
   return (
-    <section className=" text-white py-16">
+    <section ref={sectionRef} className="bg-gradient-to-br from-rose-100 via-pink-100 to-fuchsia-100 text-white py-16">
       <div className="max-w-4xl mx-auto px-6 text-center">
         <div className="flex justify-center mb-8">
           <Image

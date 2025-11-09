@@ -1,11 +1,15 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import mural5 from "@/public/images/mural-5.png";
 import mural6 from "@/public/images/mural-6.png";
+import artSVG from "@/public/art-gallery.svg";
+import FloatingSVG from "@/components/FloatingSVG";
+
+import { useParallax } from "@/customHooks/useParallax";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,8 +25,11 @@ const galleryImages = [
 
 export default function Gallery() {
   const mainHeadingRef = useRef<HTMLHeadingElement>(null);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Add parallax effect to the section
+  useParallax(sectionRef, { speed: 50, opacity: false });
 
   useEffect(() => {
     // Animate main heading
@@ -71,8 +78,6 @@ export default function Gallery() {
   }, []);
 
   const handleMouseEnter = (index: number) => {
-    setHoveredIndex(index);
-
     // Animate all items
     itemRefs.current.forEach((item, i) => {
       if (!item) return;
@@ -98,8 +103,6 @@ export default function Gallery() {
   };
 
   const handleMouseLeave = () => {
-    setHoveredIndex(null);
-
     // Reset all items to normal size
     itemRefs.current.forEach((item) => {
       if (!item) return;
@@ -113,13 +116,26 @@ export default function Gallery() {
   };
 
   return (
-    <section className="relative flex items-center justify-center bg-zinc-100 py-20 px-4 overflow-hidden">
-      
+    <section
+      ref={sectionRef}
+      className="relative flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-20 px-4 overflow-hidden"
+    >
+      <FloatingSVG
+        src={artSVG}
+        alt="art gallery"
+        width={200}
+        height={200}
+        className="absolute top-0 right-10 hidden sm:block"
+        floatSpeed={3}
+        floatDistance={20}
+        rotationAmount={8}
+      />
+
       <div className="max-w-7xl w-full relative z-10">
         <div className="text-center mb-12 mx-auto">
           <h2
             ref={mainHeadingRef}
-            className="text-5xl md:text-6xl font-bold text-zinc-800 mb-4"
+            className="text-5xl md:text-6xl font-bold text-white mb-4"
             style={{ perspective: "1000px" }}
           >
             SEE OUR ART GALLERY
@@ -127,11 +143,13 @@ export default function Gallery() {
         </div>
 
         {/* 3x2 Grid with expandable effect */}
-        <div className="overflow-hidden grid grid-cols-3 grid-rows-2 gap-1 bg-zinc-300 p-1 rounded-lg">
+        <div className="overflow-hidden grid grid-cols-3 grid-rows-2 gap-1  p-1 rounded-lg">
           {galleryImages.map((image, index) => (
             <div
               key={index}
-              ref={(el) => (itemRefs.current[index] = el)}
+              ref={(el) => {
+                itemRefs.current[index] = el;
+              }}
               className="relative overflow-visible"
               style={{
                 aspectRatio: "1/1",

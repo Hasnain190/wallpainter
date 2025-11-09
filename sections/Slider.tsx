@@ -6,6 +6,8 @@ import schoolWallUnpainted from "@/public/images/school-wall-unpainted.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import magicSVG from "@/public/magic.svg";
+import { useParallax } from "@/customHooks/useParallax";
+import FloatingSVG from "@/components/FloatingSVG";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,6 +20,10 @@ export default function Comparison() {
   const targetPositionRef = useRef(50);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const subheadingRef = useRef<HTMLParagraphElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Add parallax effect
+  useParallax(sectionRef, { speed: 80, opacity: false });
 
   // Animate heading on scroll
   useEffect(() => {
@@ -28,7 +34,7 @@ export default function Comparison() {
     const text = heading.textContent || "";
     heading.innerHTML = "";
 
-    text.split(" ").forEach((word, index) => {
+    text.split(" ").forEach((word) => {
       const span = document.createElement("span");
       span.textContent = word;
       span.style.display = "inline-block";
@@ -167,18 +173,22 @@ export default function Comparison() {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (e.touches.length > 0) {
+      isDraggingRef.current = true;
       handleMove(e.touches[0].clientX);
     }
   };
 
   return (
-    <section className=" relative flex items-center justify-center bg-zinc-100 py-20 px-4">
-      <Image
+    <section ref={sectionRef} className=" relative flex items-center justify-center bg-gradient-to-br from-orange-50 via-amber-100 to-yellow-50 py-20 px-4">
+      <FloatingSVG
         src={magicSVG}
         alt="magic"
         width={200}
         height={200}
-        className="absolute top-0 left-10 hidden sm:block "
+        className="absolute top-0 left-10 hidden sm:block"
+        floatSpeed={2.5}
+        floatDistance={25}
+        rotationAmount={10}
       />
       <div className="max-w-6xl w-full">
         <div className="text-center mb-12">
@@ -197,6 +207,10 @@ export default function Comparison() {
         <div
           ref={containerRef}
           className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-2xl shadow-2xl cursor-ew-resize select-none"
+          onMouseDown={(e) => {
+            isDraggingRef.current = true;
+            handleMove(e.clientX);
+          }}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
@@ -240,7 +254,7 @@ export default function Comparison() {
           {/* Slider Line and Handle */}
           <div
             ref={sliderLineRef}
-            className="absolute top-0 bottom-0 w-5 shadow-lg z-10 backdrop-blur-sm border border-white/30"
+            className="absolute top-0 bottom-0 w-5 shadow-lg z-10 backdrop-blur-sm border border-white/30 pointer-events-none"
             style={{
               left: `${sliderPosition}%`,
               background:
@@ -266,7 +280,7 @@ export default function Comparison() {
 
             {/* Handle */}
             <div
-              className="slider-handle absolute top-1/2 -translate-y-1/2 -translate-x-1/3 w-12 h-12 md:w-16 md:h-16 rounded-full shadow-2xl flex items-center justify-center cursor-grab active:cursor-grabbing backdrop-blur-sm border-2 border-white bg-zinc-200/80"
+              className="slider-handle absolute top-1/2 -translate-y-1/2 -translate-x-1/3 w-12 h-12 md:w-16 md:h-16 rounded-full shadow-2xl flex items-center justify-center cursor-grab active:cursor-grabbing backdrop-blur-sm border-2 border-white bg-zinc-200/80 pointer-events-auto"
               onMouseDown={handleMouseDown}
               onTouchStart={handleMouseDown}
             >
