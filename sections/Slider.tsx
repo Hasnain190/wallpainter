@@ -5,6 +5,7 @@ import Image from "next/image";
 import schoolWallUnpainted from "@/public/images/school-wall-unpainted.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import magicSVG from "@/public/magic.svg";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -83,7 +84,7 @@ export default function Comparison() {
     );
 
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
 
@@ -171,7 +172,14 @@ export default function Comparison() {
   };
 
   return (
-    <section className=" flex items-center justify-center bg-zinc-100 py-20 px-4">
+    <section className=" relative flex items-center justify-center bg-zinc-100 py-20 px-4">
+      <Image
+        src={magicSVG}
+        alt="magic"
+        width={200}
+        height={200}
+        className="absolute top-0 left-10 hidden sm:block "
+      />
       <div className="max-w-6xl w-full">
         <div className="text-center mb-12">
           <h2
@@ -181,10 +189,7 @@ export default function Comparison() {
           >
             See The Magic
           </h2>
-          <p
-            ref={subheadingRef}
-            className="text-2xl md:text-xl text-zinc-600"
-          >
+          <p ref={subheadingRef} className="text-2xl md:text-xl text-zinc-600">
             How mural art bring life to your boring dusty wall
           </p>
         </div>
@@ -235,12 +240,33 @@ export default function Comparison() {
           {/* Slider Line and Handle */}
           <div
             ref={sliderLineRef}
-            className="absolute top-0 bottom-0 w-1 bg-white shadow-lg z-10"
-            style={{ left: `${sliderPosition}%` }}
+            className="absolute top-0 bottom-0 w-5 shadow-lg z-10 backdrop-blur-sm border border-white/30"
+            style={{
+              left: `${sliderPosition}%`,
+              background:
+                "linear-gradient(90deg, transparent 0%, yellow 50%, transparent 100%)",
+            }}
           >
+            <div
+              className="rope h-[200%]  overflow-hidden"
+              style={{ position: "relative", bottom: `${sliderPosition}%` }}
+            >
+              {[...new Array(100)].map((_, i) => (
+                <div
+                  key={i}
+                  className={`roller bg-amber-50 w-1 h-11 rounded-2xl top `}
+                  style={{
+                    position: "absolute",
+                    top: i * 16,
+                    rotate: "45deg",
+                  }}
+                ></div>
+              ))}
+            </div>
+
             {/* Handle */}
             <div
-              className="slider-handle absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-12 h-12 md:w-16 md:h-16 bg-white rounded-full shadow-2xl flex items-center justify-center cursor-grab active:cursor-grabbing"
+              className="slider-handle absolute top-1/2 -translate-y-1/2 -translate-x-1/3 w-12 h-12 md:w-16 md:h-16 rounded-full shadow-2xl flex items-center justify-center cursor-grab active:cursor-grabbing backdrop-blur-sm border-2 border-white bg-zinc-200/80"
               onMouseDown={handleMouseDown}
               onTouchStart={handleMouseDown}
             >

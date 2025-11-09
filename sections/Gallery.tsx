@@ -4,6 +4,8 @@ import React, { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
+import mural5 from "@/public/images/mural-5.png";
+import mural6 from "@/public/images/mural-6.png";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,13 +15,14 @@ const galleryImages = [
   "/images/mural-2.jpg",
   "/images/mural-3.jpg",
   "/images/mural-4.jpg",
-  "/images/mural-5.jpg",
-  "/images/mural-6.jpg",
+  mural5,
+  mural6,
 ];
 
 export default function Gallery() {
   const mainHeadingRef = useRef<HTMLHeadingElement>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     // Animate main heading
@@ -69,27 +72,50 @@ export default function Gallery() {
 
   const handleMouseEnter = (index: number) => {
     setHoveredIndex(index);
+
+    // Animate all items
+    itemRefs.current.forEach((item, i) => {
+      if (!item) return;
+
+      if (i === index) {
+        // Hovered item - scale up
+        gsap.to(item, {
+          scale: 1.2,
+          zIndex: 50,
+          duration: 0.5,
+          ease: "power2.out",
+        });
+      } else {
+        // Other items - scale down
+        gsap.to(item, {
+          scale: 0.5,
+          zIndex: 1,
+          duration: 0.5,
+          ease: "power2.out",
+        });
+      }
+    });
   };
 
   const handleMouseLeave = () => {
     setHoveredIndex(null);
-  };
 
-  const getGridItemClass = (index: number) => {
-    if (hoveredIndex === null) {
-      return "col-span-1 row-span-1";
-    }
-
-    if (hoveredIndex === index) {
-      return "col-span-2 row-span-2";
-    }
-
-    return "col-span-1 row-span-1";
+    // Reset all items to normal size
+    itemRefs.current.forEach((item) => {
+      if (!item) return;
+      gsap.to(item, {
+        scale: 1,
+        zIndex: 1,
+        duration: 0.5,
+        ease: "power2.out",
+      });
+    });
   };
 
   return (
-    <section className="flex items-center justify-center bg-zinc-100 py-20 px-4">
-      <div className="max-w-7xl w-full">
+    <section className="relative flex items-center justify-center bg-zinc-100 py-20 px-4 overflow-hidden">
+      
+      <div className="max-w-7xl w-full relative z-10">
         <div className="text-center mb-12 mx-auto">
           <h2
             ref={mainHeadingRef}
@@ -100,16 +126,15 @@ export default function Gallery() {
           </h2>
         </div>
 
-        {/* 2x3 Grid with expandable effect */}
-        <div className="grid grid-cols-3 grid-rows-2 gap-1 bg-zinc-300 p-1 rounded-lg">
+        {/* 3x2 Grid with expandable effect */}
+        <div className="overflow-hidden grid grid-cols-3 grid-rows-2 gap-1 bg-zinc-300 p-1 rounded-lg">
           {galleryImages.map((image, index) => (
             <div
               key={index}
-              className={`relative overflow-hidden transition-all duration-500 ease-out ${getGridItemClass(
-                index
-              )}`}
+              ref={(el) => (itemRefs.current[index] = el)}
+              className="relative overflow-visible"
               style={{
-                aspectRatio: hoveredIndex === index ? "1/1" : "1/1",
+                aspectRatio: "1/1",
               }}
               onMouseEnter={() => handleMouseEnter(index)}
               onMouseLeave={handleMouseLeave}
@@ -117,7 +142,7 @@ export default function Gallery() {
               <div className="relative w-full h-full bg-zinc-200">
                 <Image
                   src={image}
-                  alt={`Mural art ${index + 1}`}
+                  alt={`Saqadat Art Gallery Painting ${index + 1}`}
                   fill
                   className="object-cover transition-transform duration-500 hover:scale-110"
                   sizes="(max-width: 768px) 33vw, 25vw"
